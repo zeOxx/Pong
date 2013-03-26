@@ -13,6 +13,11 @@ class Player():
     def __init__(self, paddle):
         self.paddle = paddle
         
+    def reset(self):
+        self.score = 0
+        
+        self.paddle.reset()
+        
     def move(self, y):
         self.paddle.move(y)
         

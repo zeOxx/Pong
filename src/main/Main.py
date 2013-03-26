@@ -41,7 +41,7 @@ class GameMain():
         self.headerFont = pygame.font.SysFont("monospace", 25, bold=True)
         self.topBar = pygame.Rect(0, 0, self.width, 50)
         
-        self.ball = Ball.Ball(self.ballTexture, (self.height + self.topBar.height), self.width)
+        self.ball = Ball.Ball(self.ballTexture, self.width, (self.height + self.topBar.height))
         
         self.paddleSpeed = 15
         self.paddleOneStartX = 80
@@ -56,6 +56,11 @@ class GameMain():
         self.gameNameLabel = self.headerFont.render(WINDOW_TITLE, 1, white)
         self.playerOneScore = self.gameFont.render(str(self.playerOne.score), 1, white)
         self.playerTwoScore = self.gameFont.render(str(self.playerTwo.score), 1, white)
+        
+    def reset(self):
+        self.ball.reset()
+        self.playerOne.reset()
+        self.playerTwo.reset()
         
     def main_loop(self):
         while self.running:
@@ -94,7 +99,7 @@ class GameMain():
     def handle_events(self):
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
-        kmods = pygame.key.get_mods()
+        #kmods = pygame.key.get_mods()
         
         for event in events:
             if event.type == pygame.QUIT: 
@@ -103,7 +108,7 @@ class GameMain():
             # event: keydown
             elif event.type == KEYDOWN:
                 if keys[K_ESCAPE]:
-                    self.running = False                
+                    self.running = False
                 
                 #Player 1:
                 if keys[K_w]:
@@ -116,7 +121,11 @@ class GameMain():
                     self.playerTwo.move(-self.paddleSpeed)
                 if keys[K_DOWN]:
                     self.playerTwo.move(self.paddleSpeed)
+                    
+                #Reset
+                if keys[K_r]:
+                    self.reset()
 
-if __name__ == "__main__":         
+if __name__ == "__main__":
     game = GameMain(WIDTH, HEIGHT)
-    game.main_loop()    
+    game.main_loop()

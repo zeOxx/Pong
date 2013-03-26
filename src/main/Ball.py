@@ -17,6 +17,13 @@ class Ball():
         self.x = (width / 2) - (self.texture.get_size()[0] / 2)
         self.y = (height / 2) - (self.texture.get_size()[1] / 2)
         
+        self.origX = self.x
+        self.origY = self.y
+        
+    def reset(self):
+        self.x = self.origX
+        self.y = self.origY
+        
     #def update(self):
         #do shit
         
