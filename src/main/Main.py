@@ -6,6 +6,7 @@ Created on 26. mars 2013
 import pygame
 import Paddle
 import Player
+import Ball
 from pygame.locals import * 
 
 WINDOW_TITLE = "Pyng!"
@@ -39,6 +40,9 @@ class GameMain():
         self.gameFont = pygame.font.SysFont("monospace", 15, bold=True)
         self.headerFont = pygame.font.SysFont("monospace", 25, bold=True)
         self.topBar = pygame.Rect(0, 0, self.width, 50)
+        
+        self.ball = Ball.Ball(self.ballTexture, (self.height + self.topBar.height), self.width)
+        
         self.paddleSpeed = 15
         self.paddleOneStartX = 80
         self.paddleTwoStartX = self.width - self.paddleOneStartX - self.paddleTexture.get_size()[0]
@@ -70,6 +74,8 @@ class GameMain():
         
         self.playerOne.draw(self.screen)
         self.playerTwo.draw(self.screen)
+        
+        self.ball.draw(self.screen)
         
         pygame.draw.rect(self.screen, black, self.topBar)
         
