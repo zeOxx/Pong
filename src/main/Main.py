@@ -7,6 +7,7 @@ import pygame
 import Paddle
 import Player
 import Ball
+import UI
 from pygame.locals import * 
 
 WINDOW_TITLE = "Pyng!"
@@ -32,30 +33,25 @@ class GameMain():
         self.clock = pygame.time.Clock()
         self.limit_fps = True
         self.fps_max = 60        
-        self.initPlayers()
+        self.initGame()
     
-    def initPlayers(self):
+    def initGame(self):
+        self.ui =  UI.UI(WINDOW_TITLE, self.width)
+        
         self.paddleTexture = pygame.image.load("paddle.png")
         self.ballTexture = pygame.image.load("ball.png")
-        self.gameFont = pygame.font.SysFont("monospace", 15, bold=True)
-        self.headerFont = pygame.font.SysFont("monospace", 25, bold=True)
-        self.topBar = pygame.Rect(0, 0, self.width, 50)
         
-        self.ball = Ball.Ball(self.ballTexture, self.width, (self.height + self.topBar.height))
+        self.ball = Ball.Ball(self.ballTexture, self.width, (self.height + self.ui.topBar.height))
         
         self.paddleSpeed = 15
         self.paddleOneStartX = 80
         self.paddleTwoStartX = self.width - self.paddleOneStartX - self.paddleTexture.get_size()[0]
-        self.paddleStartHeight = ((self.height + self.topBar.height)/2) - (self.paddleTexture.get_size()[1] / 2)
+        self.paddleStartHeight = ((self.height + self.ui.topBar.height)/2) - (self.paddleTexture.get_size()[1] / 2)
         
-        self.paddleOne = Paddle.Paddle(self.paddleTexture, self.paddleOneStartX, self.paddleStartHeight, self.height - self.topBar.height)
+        self.paddleOne = Paddle.Paddle(self.paddleTexture, self.paddleOneStartX, self.paddleStartHeight, self.height - self.ui.topBar.height)
         self.playerOne = Player.Player(self.paddleOne)
-        self.paddleTwo = Paddle.Paddle(self.paddleTexture, self.paddleTwoStartX, self.paddleStartHeight, self.height - self.topBar.height)
+        self.paddleTwo = Paddle.Paddle(self.paddleTexture, self.paddleTwoStartX, self.paddleStartHeight, self.height - self.ui.topBar.height)
         self.playerTwo = Player.Player(self.paddleTwo)
-        
-        self.gameNameLabel = self.headerFont.render(WINDOW_TITLE, 1, white)
-        self.playerOneScore = self.gameFont.render(str(self.playerOne.score), 1, white)
-        self.playerTwoScore = self.gameFont.render(str(self.playerTwo.score), 1, white)
         
     def reset(self):
         self.ball.reset()
@@ -82,19 +78,15 @@ class GameMain():
         
         self.ball.draw(self.screen)
         
-        pygame.draw.rect(self.screen, black, self.topBar)
-        
-        self.screen.blit(self.playerOneScore, (self.playerOne.paddle.x - (self.playerOneScore.get_size()[0] / 2), 15))
-        self.screen.blit(self.playerTwoScore, (self.playerTwo.paddle.x - (self.playerTwoScore.get_size()[0] / 2), 15))
-        self.screen.blit(self.gameNameLabel, ((self.width / 2) - (self.gameNameLabel.get_size()[0] / 2), 10))
+        self.ui.draw(self.screen, self.playerOne.paddle.x, self.playerTwo.paddle.x)
         
         pygame.display.flip()
         
     def update(self):
         self.now = pygame.time.get_ticks()
         
-        self.playerOneScore = self.gameFont.render(str(self.playerOne.score), 1, white)
-        self.playerTwoScore = self.gameFont.render(str(self.playerTwo.score), 1, white)
+        self.ui.update()
+        self.ball.update()
 
     def handle_events(self):
         events = pygame.event.get()
@@ -107,8 +99,13 @@ class GameMain():
                 
             # event: keydown
             elif event.type == KEYDOWN:
+                #Exit game
                 if keys[K_ESCAPE]:
                     self.running = False
+                
+                #Reset
+                if keys[K_r]:
+                    self.reset()
                 
                 #Player 1:
                 if keys[K_w]:
@@ -121,10 +118,6 @@ class GameMain():
                     self.playerTwo.move(-self.paddleSpeed)
                 if keys[K_DOWN]:
                     self.playerTwo.move(self.paddleSpeed)
-                    
-                #Reset
-                if keys[K_r]:
-                    self.reset()
 
 if __name__ == "__main__":
     game = GameMain(WIDTH, HEIGHT)

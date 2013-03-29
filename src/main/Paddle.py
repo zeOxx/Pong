@@ -7,7 +7,6 @@ import pygame
 from pygame.locals import * 
 
 class Paddle():
-    
     active = False
     x = 0
     y = 0
