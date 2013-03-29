@@ -13,14 +13,17 @@ class Player():
     def __init__(self, paddle):
         self.paddle = paddle
         
-    def reset(self):
+    def reset(self):      
+        self.paddle.reset()
+        
+    def restart(self):
         self.score = 0
         
-        self.paddle.reset()
+        self.reset()
         
     def move(self, y):
         self.paddle.move(y)
-        
+
     def givePoint(self):
         self.score += 1
         

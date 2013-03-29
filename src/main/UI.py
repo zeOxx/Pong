@@ -24,11 +24,9 @@ class UI():
         self.playerOneScoreLabel = self.gameFont.render(str(self.playerOneScore), 1, white)
         self.playerTwoScoreLabel = self.gameFont.render(str(self.playerTwoScore), 1, white)
         
-    def updateScores(self, player):
-        if player == 1:
-            self.playerOneScore += 1
-        else:
-            self.playerTwoScore += 1
+    def updateScores(self, p1, p2):
+        self.playerOneScore = p1
+        self.playerTwoScore = p2
             
     def update(self):
         self.playerOneScoreLabel = self.gameFont.render(str(self.playerOneScore), 1, white)

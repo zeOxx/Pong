@@ -20,6 +20,9 @@ class GameMain():
     running = True
     color_bg = Color(50, 50, 50)
     
+    leftScoreLine = 0
+    rightScoreLine = 0
+    
     def __init__(self, width, height):
         pygame.init()
 
@@ -29,6 +32,9 @@ class GameMain():
         self.screen = pygame.display.set_mode(( self.width, self.height ))
         pygame.display.set_caption( WINDOW_TITLE )        
         pygame.key.set_repeat(30,30) 
+        
+        self.leftScoreLine = 20
+        self.rightScoreLine = width - 20
 
         # fps clock, limits max fps
         self.clock = pygame.time.Clock()
@@ -49,12 +55,12 @@ class GameMain():
         self.paddleTwoStartX = self.width - self.paddleOneStartX - self.paddleTexture.get_size()[0]
         self.paddleStartHeight = ((self.height + self.ui.topBar.height)/2) - (self.paddleTexture.get_size()[1] / 2)
         
-        self.paddleOne = Paddle.Paddle(self.paddleTexture, self.paddleOneStartX, self.paddleStartHeight, self.height - self.ui.topBar.height)
+        self.paddleOne = Paddle.Paddle(self.paddleTexture, self.paddleOneStartX, self.paddleStartHeight, self.height)
         self.playerOne = Player.Player(self.paddleOne)
-        self.paddleTwo = Paddle.Paddle(self.paddleTexture, self.paddleTwoStartX, self.paddleStartHeight, self.height - self.ui.topBar.height)
+        self.paddleTwo = Paddle.Paddle(self.paddleTexture, self.paddleTwoStartX, self.paddleStartHeight, self.height)
         self.playerTwo = Player.Player(self.paddleTwo)
             
-    def detectCollision(self):
+    def detectCollision(self):        
         #storing paddles and ball in rects
         p1rect = pygame.Rect(self.playerOne.paddle.x, self.playerOne.paddle.y, self.playerOne.paddle.texture.get_size()[0], self.playerOne.paddle.texture.get_size()[1])
         p2rect = pygame.Rect(self.playerTwo.paddle.x, self.playerTwo.paddle.y, self.playerTwo.paddle.texture.get_size()[0], self.playerTwo.paddle.texture.get_size()[1])
@@ -67,11 +73,30 @@ class GameMain():
         #check for topbar collision OR maximum height collision
         if self.ui.topBar.colliderect(ballRect) or (ballRect.y + ballRect.height) > self.height:
             self.ball.changeDirection(1)
-        
+            
+        #check for paddle-collision with the screen elements
+        if self.ui.topBar.colliderect(p1rect) or (p1rect.y + p1rect.height) > self.height:
+            self.playerOne.paddle.setCollide(self.ui.topBar)
+        if self.ui.topBar.colliderect(p2rect) or (p2rect.y + p2rect.height) > self.height:
+            self.playerTwo.paddle.setCollide(self.ui.topBar)
+            
+        #set scores
+        if ballRect.x < self.leftScoreLine:
+            self.playerTwo.givePoint()
+            self.reset()
+        if ballRect.x > self.rightScoreLine:
+            self.playerOne.givePoint()
+            self.reset()
+            
     def reset(self):
         self.ball.reset()
         self.playerOne.reset()
         self.playerTwo.reset()
+        
+    def restart(self):
+        self.ball.reset()
+        self.playerOne.restart()
+        self.playerTwo.restart()
         
     def main_loop(self):
         while self.running:
@@ -99,8 +124,10 @@ class GameMain():
         
     def update(self):
         self.now = pygame.time.get_ticks()
+        
         self.detectCollision()
         
+        self.ui.updateScores(self.playerOne.score, self.playerTwo.score)
         self.ui.update()
         self.ball.update()
 
@@ -121,7 +148,7 @@ class GameMain():
                 
                 #Reset
                 if keys[K_r]:
-                    self.reset()
+                    self.restart()
                 
                 #Player 1:
                 if keys[K_w]:
