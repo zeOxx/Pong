@@ -8,6 +8,8 @@ from pygame.locals import *
 from random import randrange
 
 class Ball():
+    bounces = 0
+    
     x = 0
     y = 0
     xSpeed = 4
@@ -43,10 +45,31 @@ class Ball():
             self.updateY = self.ySpeed
         else:
             self.updateY = -self.ySpeed
+            
+        self.bounces = 0
+        self.xSpeed = 4
+        self.ySpeed = 3
         
     def update(self):
         self.x += self.updateX
         self.y += self.updateY
+        
+        #increase speed based on bounces
+        if self.bounces == 3:
+            self.xSpeed += 1
+            self.ySpeed += 1
+            self.bounces = 0
+            print self.bounces
+            print self.xSpeed
+            print self.ySpeed
+        
+    def changeDirection(self, xy):
+        #xy: 0 = x, 1 = y
+        if xy == 0:
+            self.updateX = -self.updateX
+            self.bounces += 1
+        else:
+            self.updateY = -self.updateY
         
     def draw(self, screen):
         screen.blit(self.texture, (self.x, self.y))
